@@ -1,5 +1,20 @@
 from fastapi import FastAPI
 from src.books.routes import book_routes
+from contextlib import asynccontextmanager
+from src.db.main import init_db
+
+@asynccontextmanager
+async def life_span(app: FastAPI):
+    """
+    This function is used to manage the lifespan of the FastAPI application.
+    It can be used to perform setup and teardown operations when the application starts and stops.
+    """
+    print("Starting up server...")
+    # Perform any setup operations here if needed
+    await init_db()
+    yield
+    # Perform any cleanup operations here if needed
+    print("Shutting down server...")
 
 version = 'v1.0'
 description = """
@@ -17,6 +32,7 @@ app = FastAPI(
     title="Bookly",
     description=description,
     version=version,
+    lifespan=life_span,
     contact={
         "name": "Bookly API Support",
         "url": "https://bookly.com/support",
